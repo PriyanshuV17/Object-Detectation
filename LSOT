@@ -1,0 +1,59 @@
+import cv2
+import sys
+
+# Initialize the Tracker (using KCF as an example)
+tracker = cv2.TrackerKCF_create()
+
+# Open the video file (replace 'your_video.mp4' with your video path)
+video_path = 'your_video.mp4'  # Change this to your video file path
+video = cv2.VideoCapture(video_path)
+
+# Check if the video was opened successfully
+if not video.isOpened():
+    print("Could not open video")
+    sys.exit()
+
+# Read the first frame
+ok, frame = video.read()
+if not ok:
+    print("Cannot read video file")
+    sys.exit()
+
+# Let the user select a bounding box around the large object in the first frame
+print("Select the large object to track.")
+bbox = cv2.selectROI("Frame", frame, fromCenter=False, showCrosshair=True)
+print(f"Selected bounding box: {bbox}")
+
+# Initialize the tracker with the first frame and the bounding box
+ok = tracker.init(frame, bbox)
+
+# Process the video stream frame-by-frame
+while True:
+    # Read a new frame
+    ok, frame = video.read()
+    if not ok:
+        break
+
+    # Update the tracker and get the new position of the object
+    ok, bbox = tracker.update(frame)
+
+    # Draw the bounding box if the tracker was successful
+    if ok:
+        # Extract the coordinates of the bounding box
+        p1 = (int(bbox[0]), int(bbox[1]))
+        p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
+        cv2.rectangle(frame, p1, p2, (0, 255, 0), 2, 1)
+    else:
+        # Tracking failure text
+        cv2.putText(frame, "Tracking Failure", (100, 80), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
+
+    # Display the tracking result
+    cv2.imshow("Large Single Object Tracking", frame)
+
+    # Break on ESC key press
+    if cv2.waitKey(1) & 0xFF == 27:  # ESC to stop
+        break
+
+# Release resources
+video.release()
+cv2.destroyAllWindows()
