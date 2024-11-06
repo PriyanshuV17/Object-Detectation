@@ -35,10 +35,6 @@ pip install opencv-python
 - `object_tracking_simulation.py` - Main script implementing MOTA, SOTA, and LSOT with interactive UI.
 - `README.md` - Project documentation.
 
-## Demo
-![Multi-Object Tracking Example](example_mota.gif)
-![Single-Object Tracking Example](example_sota.gif)
-
 ## Requirements
 - Python 3.6+
 - OpenCV 4.x
